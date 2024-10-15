@@ -29,6 +29,8 @@ struct page {
 
 // Menu state.
 struct menu {
+    // Whether the menu appears in the center of the screen
+    bool centerd;
 	// Whether the menu appears at the bottom of the screen
 	bool bottom;
 	// The function used to match menu items

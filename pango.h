@@ -4,7 +4,11 @@
 #include <cairo/cairo.h>
 #include <pango/pangocairo.h>
 
-int get_font_height(const char *font);
+struct FontInfo {
+    int height, char_width, digit_width;
+};
+
+struct FontInfo get_font_height(const char *font);
 PangoLayout *get_pango_layout(cairo_t *cairo, const char *font,
 		const char *text, double scale);
 void get_text_size(cairo_t *cairo, const char *font, int *width, int *height,
