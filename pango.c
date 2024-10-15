@@ -7,23 +7,29 @@
 
 #include "pango.h"
 
-int get_font_height(const char *fontstr) {
+struct FontInfo get_font_height(const char *fontstr) {
 	PangoFontMap *fontmap = pango_cairo_font_map_get_default();
 	PangoContext *context = pango_font_map_create_context(fontmap);
 	PangoFontDescription *desc = pango_font_description_from_string(fontstr);
 	PangoFont *font = pango_font_map_load_font(fontmap, context, desc);
+    struct FontInfo info;
 	if (font == NULL) {
 		pango_font_description_free(desc);
 		g_object_unref(context);
-		return -1;
+        info.height = -1;
+        info.char_width = -1;
+        info.digit_width = -1;
+		return info;
 	}
 	PangoFontMetrics *metrics = pango_font_get_metrics(font, NULL);
-	int height = pango_font_metrics_get_height(metrics) / PANGO_SCALE;
+	info.height = pango_font_metrics_get_height(metrics) / PANGO_SCALE;
+    info.char_width = pango_font_metrics_get_approximate_char_width(metrics) / 1024;
+    info.digit_width = pango_font_metrics_get_approximate_digit_width(metrics) / 1024;
 	pango_font_metrics_unref(metrics);
 	g_object_unref(font);
 	pango_font_description_free(desc);
 	g_object_unref(context);
-	return height;
+	return info;
 }
 
 PangoLayout *get_pango_layout(cairo_t *cairo, const char *font,

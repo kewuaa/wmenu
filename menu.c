@@ -86,15 +86,18 @@ static bool parse_color(const char *color, uint32_t *result) {
 // Parse menu options from command line arguments.
 void menu_getopts(struct menu *menu, int argc, char *argv[]) {
 	const char *usage =
-		"Usage: wmenu [-biPv] [-f font] [-l lines] [-o output] [-p prompt]\n"
+		"Usage: wmenu [-bciPv] [-f font] [-l lines] [-o output] [-p prompt]\n"
 		"\t[-N color] [-n color] [-M color] [-m color] [-S color] [-s color]\n";
 
 	int opt;
-	while ((opt = getopt(argc, argv, "bhiPvf:l:o:p:N:n:M:m:S:s:")) != -1) {
+	while ((opt = getopt(argc, argv, "bchiPvf:l:o:p:N:n:M:m:S:s:")) != -1) {
 		switch (opt) {
 		case 'b':
 			menu->bottom = true;
 			break;
+        case 'c': 
+            menu->centerd = true;
+            break;
 		case 'i':
 			menu->strncmp = strncasecmp;
 			break;
@@ -157,13 +160,14 @@ void menu_getopts(struct menu *menu, int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	int height = get_font_height(menu->font);
-	menu->line_height = height + 2;
+	struct FontInfo info = get_font_height(menu->font);
+    menu->width = menu->centerd ? info.char_width * 50 : 0;
+	menu->line_height = info.height + 2;
 	menu->height = menu->line_height;
 	if (menu->lines > 0) {
 		menu->height += menu->height * menu->lines;
 	}
-	menu->padding = height / 2;
+	menu->padding = info.height / 2;
 }
 
 // Add an item to the menu.
